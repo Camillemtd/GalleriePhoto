@@ -1,9 +1,11 @@
 import express from 'express';
+const cors = require('cors');
 import authRoutes from "./routes/authRoutes"
 import pictureRoutes from './routes/pictureRoute'
 const rateLimit = require('express-rate-limit');
 
 const app = express();
+app.use(cors());
 
 app.use(express.json()); 
 

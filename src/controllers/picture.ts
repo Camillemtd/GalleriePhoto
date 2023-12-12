@@ -14,12 +14,13 @@ import {
   getDownloadURL,
   deleteObject,
 } from "firebase/storage";
+import fs from 'fs'; 
 import { storage, firestore } from "../firebase-config";
 
 export const createPicture = async (req: Request, res: Response) => {
-	if (!req.file) {
-        return res.status(400).send("Aucun fichier valide n'a été téléchargé ou le type de fichier n'est pas autorisé.");
-    }
+  if (!req.file) {
+    return res.status(400).send("Aucun fichier valide n'a été téléchargé ou le type de fichier n'est pas autorisé.");
+  }
 
   if (!req["uid"]) {
     return res.status(403).send("L'opération nécessite une authentification.");
@@ -29,7 +30,11 @@ export const createPicture = async (req: Request, res: Response) => {
 
   try {
     const storageRef = ref(storage, `images/${req.file.filename}`);
-    const snapshot = await uploadBytes(storageRef, req.file.buffer);
+    
+    // Lire le fichier depuis le système de fichiers
+    const fileBuffer = fs.readFileSync(req.file.path);
+
+    const snapshot = await uploadBytes(storageRef, fileBuffer);
     const downloadURL = await getDownloadURL(snapshot.ref);
 
     const docRef = await addDoc(collection(firestore, "photos"), {
@@ -125,15 +130,17 @@ export const updatePicture = async (req: Request, res: Response) => {
 
     let imageUrl = photoDoc.data().imageUrl;
 
-    // Si une nouvelle image est fournie, remplacez l'ancienne
     if (req.file) {
       // Supprimer l'ancienne image de Firebase Storage
       const oldImageRef = ref(storage, imageUrl);
       await deleteObject(oldImageRef);
 
+      // Lire le nouveau fichier depuis le système de fichiers
+      const fileBuffer = fs.readFileSync(req.file.path);
+
       // Télécharger la nouvelle image et obtenir l'URL
       const newImageRef = ref(storage, `images/${req.file.filename}`);
-      const snapshot = await uploadBytes(newImageRef, req.file.buffer);
+      const snapshot = await uploadBytes(newImageRef, fileBuffer);
       imageUrl = await getDownloadURL(snapshot.ref);
     }
 
@@ -144,7 +151,7 @@ export const updatePicture = async (req: Request, res: Response) => {
       imageUrl,
     });
 
-    res.status(200).send("Photo mise à jour avec succès.");
+    res.status(200).json({ message: "Photo mise à jour avec succès." });
   } catch (error) {
     console.error("Erreur lors de la mise à jour de la photo: ", error);
     res.status(500).send("Erreur lors de la mise à jour de la photo.");
