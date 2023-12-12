@@ -10,7 +10,7 @@ const app = express();
 
 
 const corsOptions = {
-  origin: 'http://localhost:5173', // Remplacez par l'URL de votre frontend en production si nécessaire
+  origin: 'http://localhost:5173', 
 };
 
 app.use(cors(corsOptions));
