@@ -9,10 +9,11 @@ const app = express();
 
 
 
-// const corsOptions = {
-//   origin: '*', // Remplacez par l'URL de votre frontend en production si nécessaire
-// };
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:5173/', // Remplacez par l'URL de votre frontend en production si nécessaire
+};
+
+app.use(cors(corsOptions));
 app.use(express.json()); 
 
 app.use('/api/auth', authRoutes);
