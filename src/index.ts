@@ -13,12 +13,13 @@ const corsOptions = {
   origin: 'http://localhost:5173', 
 };
 
-app.use(cors(corsOptions));
+
 app.use(express.json()); 
 
 app.use('/api/auth', authRoutes);
 
 app.use('/api/pictures', pictureRoutes);
+app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
