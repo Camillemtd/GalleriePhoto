@@ -7,11 +7,8 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 
-const corsOptions = {
-  origin: 'http://localhost:5173', // Et ajoutez ici l'URL de votre front-end en production
-};
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
